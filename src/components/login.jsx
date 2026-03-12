@@ -99,7 +99,7 @@ export default function LoginPage() {
                 placeholder="you@university.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "#f8fafc" }}
+                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "#dadada" ,color: "black"}}
               />
             </div>
 
@@ -111,7 +111,9 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: "100%", padding: "10px 40px 10px 14px", border: "1.5px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "#f8fafc" }}
+                  style={{ width: "100%", padding: "10px 40px 10px 14px", border: "1.5px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "#f8fafc" ,color: "black"
+
+                   }}
                 />
                 <button
                   type="button"
