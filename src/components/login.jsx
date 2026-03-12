@@ -148,7 +148,7 @@ export default function LoginPage() {
 
       {/* Footer */}
       <footer style={{ textAlign: "center", padding: "16px", borderTop: "1px solid #f1f5f9" }}>
-        <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>© 2025 Campus Placement Portal · All rights reserved</p>
+        <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>© 2026 Campus Placement Portal · All rights reserved</p>
       </footer>
 
     </div>
