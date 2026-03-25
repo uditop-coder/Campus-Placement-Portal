@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ROLES = [
   { id: "student", label: "Student", icon: "🎓" },
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,10 +32,26 @@ export default function LoginPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        window.location.href = "/dashboard";
+      console.log("LOGIN RESPONSE:", data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
+      alert("Login success: " + data.role);
+
+      if (data.role === "admin") {
+        window.location.href = "/admin-dashboard";
+      } else if (data.role === "company") {
+        window.location.href = "/company-dashboard";
+      } else if (data.role === "student") {
+        window.location.href = "/student-dashboard";
       } else {
-        setError(data.message || "Invalid credentials.");
+        console.log("Unknown role:", data.role);
       }
+
+    } else {
+      setError(data.message || "Invalid credentials.");
+    }
     } catch {
       setError("Unable to connect to server.");
     } finally {
