@@ -42,10 +42,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh",width: "100vw", background: "#f0f4ff", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh",width: "100vw", background: "#ffffff", display: "flex", flexDirection: "column" }}>
 
       {/* Navbar */}
-      <nav style={{ background: "#fff", padding: "0 32px", height: "60px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+      <nav style={{ background: "#20caf1", padding: "0 32px", height: "60px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
         <span style={{ fontWeight: "700", fontSize: "18px", color: "#1e3a8a" }}>🎯 Campus Placement Portal</span>
         <div style={{ display: "flex", gap: "8px" }}>
           {["Home", "Login", "Register"].map((link) => (
@@ -55,16 +55,19 @@ export default function LoginPage() {
           ))}
         </div>
       </nav>
+      
 
       {/* Main */}
       <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
-        <div style={{ background: "#fff", borderRadius: "0px", padding: "36px", width: "100%", maxWidth: "380px", boxShadow: "0 4px 24px rgba(37,99,235,0.1)", border: "1px solid #e2e8f0" }}>
+        <div style={{ background: "#ffffff", borderRadius: "0px", padding: "36px", width: "100%", maxWidth: "380px", boxShadow: "0 15px 64px rgba(24, 51, 110, 0.1)", border: "1px solid #e2e8f0" }}>
 
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
             <h2 style={{ margin: "0 0 4px", fontSize: "24px", fontWeight: "800", color: "#0f172a" }}>Welcome Back</h2>
             <p style={{ margin: 0, color: "#94a3b8", fontSize: "14px" }}>Sign in to your account</p>
+            
           </div>
+          
 
           {/* Role Tabs */}
           <div style={{ display: "flex", background: "#f8fafc", borderRadius: "10px", padding: "4px", marginBottom: "20px" }}>
@@ -137,6 +140,7 @@ export default function LoginPage() {
               {loading ? "Signing in..." : `Sign In as ${ROLES.find((r) => r.id === activeRole)?.label}`}
             </button>
           </form>
+          
 
           {/* Footer Links */}
           <div style={{ textAlign: "center", marginTop: "18px", fontSize: "13px", color: "#64748b" }}>
@@ -146,13 +150,16 @@ export default function LoginPage() {
           </div>
 
         </div>
+        
+         
       </main>
+
 
       {/* Footer */}
       <footer style={{ textAlign: "center", padding: "16px", borderTop: "1px solid #f1f5f9" }}>
         <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>© 2026 Campus Placement Portal · All rights reserved</p>
       </footer>
-
+      
     </div>
   );
 }
