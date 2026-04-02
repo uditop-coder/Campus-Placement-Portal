@@ -5,7 +5,17 @@ const jwt = require("jsonwebtoken");
 // REGISTER
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      branch,
+      section,
+      rollNo,
+      description,
+      managerName
+    } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -19,7 +29,11 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      isApproved: role === "student"
+      branch,
+      section,
+      rollNo,
+      description,
+      managerName
     });
 
     await user.save();
@@ -27,6 +41,7 @@ exports.register = async (req, res) => {
     res.json({ message: "User registered successfully" });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error registering user" });
   }
 };

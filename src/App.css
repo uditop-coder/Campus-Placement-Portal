@@ -1,6 +1,6 @@
 #root {
-  max-width: 100%; 
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;  
 }
 
 .logo {
@@ -37,4 +37,9 @@
 
 .read-the-docs {
   color: #888;
+}
+
+body {
+  margin: 0;           /* removes default spacing */
+  padding: 0;
 }
