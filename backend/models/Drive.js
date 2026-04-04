@@ -5,8 +5,8 @@ const driveSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company"
   },
-  jobTitle: String,
-  description: String,
+  role: String,
+  package: String,
   eligibility: {
     cgpa: Number,
     branch: String

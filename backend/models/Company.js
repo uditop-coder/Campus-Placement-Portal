@@ -8,6 +8,8 @@ const companySchema = new mongoose.Schema({
   companyName: String,
   hrContact: String,
   website: String,
+  description: String,
+  totalEmployees: Number,
   approved: {
     type: Boolean,
     default: false
