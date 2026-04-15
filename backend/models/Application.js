@@ -1,22 +1,33 @@
 const mongoose = require("mongoose");
 
 const applicationSchema = new mongoose.Schema({
-  studentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Student"
+  student: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Student", 
+    required: true 
   },
-  companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Company"
+
+  drive: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Drive", 
+    required: true 
   },
-  driveId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Drive"
+
+  appliedAt: { 
+    type: Date, 
+    default: Date.now 
   },
-  status: {
-    type: String,
-    default: "Applied"
-  }
-});
+
+  status: { 
+    type: String, 
+    enum: ["applied", "shortlisted", "selected", "rejected"],
+    default: "applied"
+  },
+
+  resume: String
+
+}, { timestamps: true });
+
+applicationSchema.index({ student: 1, drive: 1 }, { unique: true });
 
 module.exports = mongoose.model("Application", applicationSchema);

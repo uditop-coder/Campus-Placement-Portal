@@ -1,19 +1,40 @@
 const mongoose = require("mongoose");
 
 const companySchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User", 
+    required: true 
   },
-  companyName: String,
-  hrContact: String,
-  website: String,
+
+  companyName: { 
+    type: String, 
+    required: true 
+  },
+
   description: String,
-  totalEmployees: Number,
-  approved: {
-    type: Boolean,
-    default: false
+
+  hrContact: String,
+
+  managerName: String,
+
+  website: String,
+
+  approved: { 
+    type: Boolean, 
+    default: false   
+  },
+
+  blacklisted: { 
+    type: Boolean, 
+    default: false 
+  },
+
+  isActive: { 
+    type: Boolean, 
+    default: true 
   }
-});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model("Company", companySchema);

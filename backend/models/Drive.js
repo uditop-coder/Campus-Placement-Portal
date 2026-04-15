@@ -1,21 +1,33 @@
 const mongoose = require("mongoose");
 
 const driveSchema = new mongoose.Schema({
-  companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Company"
+  company: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Company", 
+    required: true 
   },
-  role: String,
-  package: String,
-  eligibility: {
-    cgpa: Number,
-    branch: String
+
+  jobTitle: { 
+    type: String, 
+    required: true 
   },
+
+  description: String,
+
+  eligibility: String,
+
   deadline: Date,
-  status: {
-    type: String,
-    default: "Pending"
+
+  status: { 
+    type: String, 
+    default: "open" 
+  },
+
+  isOpen: { 
+    type: Boolean, 
+    default: true 
   }
-});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model("Drive", driveSchema);

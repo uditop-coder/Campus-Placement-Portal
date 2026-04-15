@@ -1,11 +1,9 @@
-import express from "express";
-import Student from "../models/Student.js";
-import multer from "multer";
-
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 const Student = require("../models/Student");
 const multer = require("multer");
 
+// 🔥 Multer Config
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
@@ -15,36 +13,72 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// GET
+
+// 🔹 GET STUDENT PROFILE
 router.get("/:userId", async (req, res) => {
-  const data = await Student.findOne({ userId: req.params.userId });
-  res.json(data);
+  try {
+    const student = await Student.findOne({ user: req.params.userId })
+      .populate("user", "email role");
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(student);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching student profile" });
+  }
 });
 
-// UPDATE
-router.post("/update", async (req, res) => {
-  const { userId } = req.body;
 
-  const data = await Student.findOneAndUpdate(
-    { userId },
-    req.body,
-    { new: true, upsert: true }
-  );
+// 🔹 UPDATE STUDENT PROFILE
+router.put("/update", async (req, res) => {
+  try {
+    const { user } = req.body;
 
-  res.json(data);
+    const updated = await Student.findOneAndUpdate(
+      { user },
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(updated);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating profile" });
+  }
 });
 
-// UPLOAD RESUME
+
+// 🔹 UPLOAD RESUME
 router.post("/upload", upload.single("resume"), async (req, res) => {
-  const { userId } = req.body;
+  try {
+    const { user } = req.body;
 
-  const data = await Student.findOneAndUpdate(
-    { userId },
-    { resume: req.file.filename },
-    { new: true }
-  );
+    const updated = await Student.findOneAndUpdate(
+      { user },
+      { resume: req.file.filename },
+      { new: true }
+    );
 
-  res.json(data);
+    if (!updated) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(updated);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error uploading resume" });
+  }
 });
+
 
 module.exports = router;

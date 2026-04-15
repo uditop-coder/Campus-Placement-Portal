@@ -25,24 +25,24 @@ export default function Register() {
   const handleRegister = async () => {
     try {
       const payload =
-        role === "student"
-          ? {
-              name: form.name,
-              email: form.email,
-              password: form.password,
-              role: "student",
-              branch: form.branch,
-              section: form.section,
-              rollNo: form.rollNo
-            }
-          : {
-              name: form.companyName,
-              email: form.email,
-              password: form.password,
-              role: "company",
-              description: form.description,
-              managerName: form.managerName
-            };
+  role === "student"
+    ? {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: "student",
+        branch: form.branch,
+        section: form.section,
+        rollNo: form.rollNo
+      }
+    : {
+        companyName: form.companyName, // ✅ FIXED
+        email: form.email,
+        password: form.password,
+        role: "company",
+        description: form.description,
+        managerName: form.managerName
+      };
 
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",

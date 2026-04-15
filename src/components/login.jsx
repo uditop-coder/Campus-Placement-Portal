@@ -17,47 +17,63 @@ export default function LoginPage() {
   const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!email || !password) {
-      setError("Please fill in all fields.");
+  e.preventDefault();
+  setError("");
+
+  if (!email || !password) {
+    setError("Please fill in all fields.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        role: activeRole
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message || "Login failed");
       return;
     }
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role: activeRole }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-      console.log("LOGIN RESPONSE:", data);
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-
-      alert("Login success: " + data.role);
-
-      if (data.role === "admin") {
-        window.location.href = "/admin-dashboard";
-      } else if (data.role === "company") {
-        window.location.href = "/company-dashboard";
-      } else if (data.role === "student") {
-        window.location.href = "/student-dashboard";
-      } else {
-        console.log("Unknown role:", data.role);
-      }
-
-    } else {
-      setError(data.message || "Invalid credentials.");
+    // 🔥 ROLE VALIDATION (VERY IMPORTANT)
+    if (data.role !== activeRole) {
+      setError(`You are registered as ${data.role}, not ${activeRole}`);
+      return;
     }
-    } catch {
-      setError("Unable to connect to server.");
-    } finally {
-      setLoading(false);
+
+    // Save auth
+   // 🔥 SAVE EVERYTHING IMPORTANT
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("userId", data.id);
+
+    // 🔥 USE navigate (NOT window.location)
+    if (data.role === "admin") {
+      navigate("/admin-dashboard");
+    } else if (data.role === "company") {
+      navigate("/company-dashboard");
+    } else if (data.role === "student") {
+      navigate("/student-dashboard");
     }
-  };
+
+  } catch (err) {
+    setError("Unable to connect to server.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{ minHeight: "100vh",width: "100vw", background: "#ffffff", display: "flex", flexDirection: "column" }}>
