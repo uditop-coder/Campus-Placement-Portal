@@ -81,4 +81,20 @@ router.post("/upload", upload.single("resume"), async (req, res) => {
 });
 
 
+const Company = require("../models/Company");
+
+// 🔹 GET APPROVED COMPANIES
+router.get("/companies/all", async (req, res) => {
+  try {
+    const companies = await Company.find({ approved: true })
+      .select("companyName description");
+
+    res.json(companies);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching companies" });
+  }
+});
+
 module.exports = router;

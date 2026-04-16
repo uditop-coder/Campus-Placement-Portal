@@ -6,7 +6,6 @@ router.post("/apply", async (req, res) => {
   try {
     const { student, drive } = req.body;
 
-    // 🔥 Prevent duplicate applications
     const existing = await Application.findOne({ student, drive });
     if (existing) {
       return res.status(400).json({
@@ -15,7 +14,6 @@ router.post("/apply", async (req, res) => {
     }
 
     const application = await Application.create(req.body);
-
     res.json(application);
 
   } catch (err) {
@@ -24,8 +22,7 @@ router.post("/apply", async (req, res) => {
   }
 });
 
-
-// 🔹 GET ALL APPLICATIONS
+// 🔹 GET ALL APPLICATIONS (ADMIN)
 router.get("/", async (req, res) => {
   try {
     const data = await Application.find()
@@ -38,13 +35,30 @@ router.get("/", async (req, res) => {
     res.json(data);
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Error fetching applications" });
   }
 });
 
+// 🔥 NEW ROUTE
+router.get("/company/:companyId", async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .populate({
+        path: "drive",
+        match: { company: req.params.companyId }
+      })
+      .populate("student", "name rollNo");
 
-// 🔹 UPDATE APPLICATION STATUS (COMPANY ACTION)
+    const filtered = applications.filter(app => app.drive !== null);
+
+    res.json(filtered);
+
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching company applications" });
+  }
+});
+
+// 🔹 UPDATE STATUS
 router.put("/update-status/:id", async (req, res) => {
   try {
     const { status } = req.body;
@@ -55,14 +69,9 @@ router.put("/update-status/:id", async (req, res) => {
       { new: true }
     );
 
-    if (!updated) {
-      return res.status(404).json({ message: "Application not found" });
-    }
-
     res.json(updated);
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Error updating status" });
   }
 });

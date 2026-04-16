@@ -26,6 +26,12 @@ const driveSchema = new mongoose.Schema({
   isOpen: { 
     type: Boolean, 
     default: true 
+  },
+
+  // 🔥 ADD THIS (CRITICAL FIX)
+  isApproved: {
+    type: Boolean,
+    default: false
   }
 
 }, { timestamps: true });
