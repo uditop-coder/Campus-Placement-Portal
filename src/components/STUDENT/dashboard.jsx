@@ -10,6 +10,7 @@ export default function StudentDashboard() {
   const [profile, setProfile] = useState({});
   const [drives, setDrives] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [resumeFile, setResumeFile] = useState(null);
 
   useEffect(() => {
     if (userId) {
@@ -20,8 +21,23 @@ export default function StudentDashboard() {
   }, [userId]);
 
   const fetchProfile = async () => {
-    const res = await axios.get(`http://localhost:5000/api/student/${userId}`);
-    setProfile(res.data);
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        "http://localhost:5000/api/student/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      setProfile(res.data);
+
+    } catch (err) {
+      console.error("Fetch Profile Error:", err.response?.data || err);
+    }
   };
 
   const fetchDrives = async () => {
@@ -51,6 +67,47 @@ export default function StudentDashboard() {
     } catch (err) {
       console.log(err);
       alert(err.response?.data?.message || "Error applying");
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        "http://localhost:5000/api/student/update",
+        profile,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (resumeFile) {
+        const formData = new FormData();
+        formData.append("resume", resumeFile);
+
+        await axios.post(
+          "http://localhost:5000/api/student/upload",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data"
+            }
+          }
+        );
+      }
+
+      alert("Profile updated successfully");
+      fetchProfile();
+
+    } catch (err) {
+      console.error("Update Error:", err.response?.data || err);
+      alert(err.response?.data?.message || "Failed to update profile");
     }
   };
 
@@ -195,36 +252,202 @@ export default function StudentDashboard() {
           <>
             <div style={{ marginBottom: "24px" }}>
               <h1 style={pageTitle}>My Profile</h1>
-              <p style={pageSubtitle}>Your personal and academic details</p>
+              <p style={pageSubtitle}>Update your personal and academic details</p>
             </div>
 
             <div style={sectionCard}>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                <div style={{
-                  width: "52px", height: "52px", borderRadius: "50%",
-                  background: "#eff6ff", display: "flex", alignItems: "center",
-                  justifyContent: "center", fontSize: "18px", fontWeight: "600", color: "#1d4ed8",
-                }}>
+              {/* Top Profile Header */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  marginBottom: "24px",
+                  paddingBottom: "20px",
+                  borderBottom: "1px solid #e2e8f0",
+                }}
+              >
+                <div
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    background: "#eff6ff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#1d4ed8",
+                  }}
+                >
                   {getInitials(profile.name)}
                 </div>
+
                 <div>
-                  <div style={{ fontSize: "16px", fontWeight: "600", color: "#0f172a" }}>{profile.name}</div>
-                  <div style={{ fontSize: "13px", color: "#64748b" }}>{profile.user?.email}</div>
+                  <h3 style={{ margin: 0, fontSize: "18px", color: "#0f172a" }}>
+                    {profile.name || "Student Name"}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+                    {profile.user?.email}
+                  </p>
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                {[
-                  { label: "Full name", value: profile.name },
-                  { label: "Email", value: profile.user?.email },
-                  { label: "Branch", value: profile.branch },
-                ].map(({ label, value }) => (
-                  <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "13px", color: "#64748b" }}>{label}</span>
-                    <span style={{ fontSize: "13px", fontWeight: "500", color: "#0f172a" }}>{value || "—"}</span>
-                  </div>
-                ))}
-              </div>
+              {/* Editable Form */}
+              <form
+                onSubmit={handleProfileUpdate}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "16px",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={profile.name || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, name: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Branch"
+                  value={profile.branch || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, branch: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Section"
+                  value={profile.section || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, section: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Roll Number"
+                  value={profile.rollNo || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, rollNo: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Contact Number"
+                  value={profile.contact || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, contact: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="CGPA"
+                  value={profile.cgpa || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, cgpa: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Portfolio URL"
+                  value={profile.portfolio || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, portfolio: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Projects"
+                  value={profile.projects || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, projects: e.target.value })
+                  }
+                  style={inputStyle}
+                />
+
+                <textarea
+                  placeholder="Address"
+                  value={profile.address || ""}
+                  onChange={(e) =>
+                    setProfile({ ...profile, address: e.target.value })
+                  }
+                  style={{
+                    ...inputStyle,
+                    gridColumn: "span 2",
+                    minHeight: "80px",
+                    resize: "vertical",
+                  }}
+                />
+
+                {/* Resume Upload */}
+                <div style={{ gridColumn: "span 2" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "8px",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      color: "#334155",
+                    }}
+                  >
+                    Upload Resume
+                  </label>
+
+                  <input
+                    type="file"
+                    onChange={(e) => setResumeFile(e.target.files[0])}
+                  />
+
+                  {profile.resume && (
+                    <p
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "12px",
+                        color: "#64748b",
+                      }}
+                    >
+                      Current Resume: {profile.resume}
+                    </p>
+                  )}
+                </div>
+
+                {/* Save Button */}
+                <button
+                  type="submit"
+                  style={{
+                    gridColumn: "span 2",
+                    padding: "12px",
+                    background: "#1d4ed8",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    marginTop: "8px",
+                  }}
+                >
+                  Save Profile
+                </button>
+              </form>
             </div>
           </>
         )}
@@ -392,6 +615,14 @@ export default function StudentDashboard() {
 
 const pageTitle = {
   fontSize: "20px", fontWeight: "600", color: "#0f172a", margin: 0,
+};
+
+const inputStyle = {
+  padding: "12px",
+  border: "1px solid #cbd5e1",
+  borderRadius: "8px",
+  fontSize: "14px",
+  width: "100%"
 };
 
 const pageSubtitle = {

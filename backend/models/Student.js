@@ -15,9 +15,10 @@ const studentSchema = new mongoose.Schema({
   branch: String,
   section: String,
 
-  rollNo: { 
-    type: String, 
-    unique: true 
+  rollNo: {
+  type: String,
+  unique: true,
+  sparse: true
   },
 
   contact: String,
