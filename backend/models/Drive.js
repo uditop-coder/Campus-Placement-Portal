@@ -23,6 +23,10 @@ const driveSchema = new mongoose.Schema({
     default: "open" 
   },
 
+  jdLink: {
+  type: String
+  },
+
   isOpen: { 
     type: Boolean, 
     default: true 
