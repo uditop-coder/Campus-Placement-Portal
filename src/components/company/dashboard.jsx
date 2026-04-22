@@ -19,7 +19,7 @@ export default function CompanyDashboard() {
 
   const [drives, setDrives] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [newDrive, setNewDrive] = useState({ jobTitle: "", description: "" });
+  const [newDrive, setNewDrive] = useState({ jobTitle: "", description: "",  jdLink: ""  });
 
   useEffect(() => {
     if (userId) fetchCompany();
@@ -92,17 +92,29 @@ export default function CompanyDashboard() {
   };
 
   const addDrive = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/drive/create", newDrive, {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "http://localhost:5000/api/drive/create",
+      newDrive,
+      {
         headers: { Authorization: `Bearer ${token}` }
-      });
-      setNewDrive({ jobTitle: "", description: "" });
-      fetchDrives();
-    } catch (err) {
-      console.error("Error creating drive:", err);
-    }
-  };
+      }
+    );
+
+    setNewDrive({
+      jobTitle: "",
+      description: "",
+      jdLink: ""
+    });
+
+    fetchDrives();
+
+  } catch (err) {
+    console.error("Error creating drive:", err);
+  }
+};
 
   const updateStatus = async (id, status) => {
     try {
@@ -124,7 +136,7 @@ export default function CompanyDashboard() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("role");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   // ── Helpers ──────────────────────────────────────────────
@@ -568,6 +580,20 @@ export default function CompanyDashboard() {
                   }
                 />
 
+                <label style={{ ...fieldLabel, marginTop: "14px" }}>
+                  JD Link (Google Drive / PDF)
+                </label>
+
+                <input
+                  className="input-field"
+                  style={inputStyle}
+                  placeholder="Paste job description link..."
+                  value={newDrive.jdLink}
+                  onChange={(e) =>
+                    setNewDrive({ ...newDrive, jdLink: e.target.value })
+                  }
+                />
+
                 <button className="save-btn" style={primaryBtn} onClick={addDrive}>
                   Add drive
                 </button>
@@ -635,12 +661,30 @@ export default function CompanyDashboard() {
                             style={{
                               fontSize: "12px",
                               color: "#64748b",
+                              whiteSpace: "pre-wrap",
                               marginTop: "2px",
+                              lineHeight: "1.5"
                             }}
                           >
                             {d.description}
                           </div>
                         </div>
+
+                        {d.jdLink && (
+                          <a
+                            href={d.jdLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              fontSize: "12px",
+                              color: "#2563eb",
+                              marginTop: "6px",
+                              display: "inline-block"
+                            }}
+                          >
+                            🔗 View Full JD
+                          </a>
+                        )}
 
                         {/* 🔥 STATUS BADGE */}
                         <div
