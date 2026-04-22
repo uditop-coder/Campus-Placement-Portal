@@ -720,29 +720,119 @@ export default function CompanyDashboard() {
                 </div>
               ) : (
                 applications.map((app) => (
-                  <div key={app._id} style={listCard}>
+                <div key={app._id} style={listCard}>
+
+                  {/* 👤 PROFILE ICON */}
+                  <div style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg,#1e3a8a,#3b82f6)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    color: "#fff",
+                    flexShrink: 0,
+                  }}>
+                    {getInitials(app.student?.name)}
+                  </div>
+
+                  {/* 🧑 STUDENT INFO */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+
+                    {/* NAME */}
                     <div style={{
-                      width: "40px", height: "40px", borderRadius: "50%",
-                      background: "linear-gradient(135deg,#1e3a8a,#3b82f6)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: "13px", fontWeight: "700", color: "#fff", flexShrink: 0,
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      color: "#0f172a"
                     }}>
-                      {getInitials(app.student?.name)}
+                      {app.student?.name || "Unknown Student"}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "14px", fontWeight: "600", color: "#0f172a" }}>{app.student?.name}</div>
-                      <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>{app.drive?.jobTitle}</div>
-                      <div style={{ marginTop: "6px" }}>
-                        <span style={statusBadge(app.status)}>{app.status || "pending"}</span>
-                      </div>
+
+                    {/* DRIVE TITLE */}
+                    <div style={{
+                      fontSize: "12px",
+                      color: "#64748b",
+                      marginTop: "2px"
+                    }}>
+                      {app.drive?.jobTitle}
                     </div>
-                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-                      <button className="action-chip" style={actionBtn("#fef3c7", "#92400e")} onClick={() => updateStatus(app._id, "shortlisted")}>Shortlist</button>
-                      <button className="action-chip" style={actionBtn("#dcfce7", "#166534")} onClick={() => updateStatus(app._id, "selected")}>Select</button>
-                      <button className="action-chip" style={actionBtn("#fee2e2", "#991b1b")} onClick={() => updateStatus(app._id, "rejected")}>Reject</button>
+
+                    {/* 🔥 NEW: STUDENT DETAILS */}
+                    <div style={{
+                      fontSize: "12px",
+                      color: "#64748b",
+                      marginTop: "4px"
+                    }}>
+                      {app.student?.branch || "N/A"} • CGPA: {app.student?.cgpa || "N/A"}
+                    </div>
+
+                    {/* 🔥 NEW: ROLL NO */}
+                    <div style={{
+                      fontSize: "11px",
+                      color: "#94a3b8",
+                      marginTop: "2px"
+                    }}>
+                      Roll No: {app.student?.rollNo || "N/A"}
+                    </div>
+
+                    {/* 🔥 NEW: RESUME LINK */}
+                    {app.student?.resume && (
+                      <a
+                        href={`http://localhost:5000/uploads/${app.student.resume}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontSize: "12px",
+                          color: "#2563eb",
+                          marginTop: "6px",
+                          display: "inline-block",
+                          fontWeight: "500"
+                        }}
+                      >
+                        📄 View Resume
+                      </a>
+                    )}
+
+                    {/* STATUS */}
+                    <div style={{ marginTop: "6px" }}>
+                      <span style={statusBadge(app.status)}>
+                        {app.status || "pending"}
+                      </span>
                     </div>
                   </div>
-                ))
+
+                  {/* 🎯 ACTION BUTTONS */}
+                  <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                    <button
+                      className="action-chip"
+                      style={actionBtn("#fef3c7", "#92400e")}
+                      onClick={() => updateStatus(app._id, "shortlisted")}
+                    >
+                      Shortlist
+                    </button>
+
+                    <button
+                      className="action-chip"
+                      style={actionBtn("#dcfce7", "#166534")}
+                      onClick={() => updateStatus(app._id, "selected")}
+                    >
+                      Select
+                    </button>
+
+                    <button
+                      className="action-chip"
+                      style={actionBtn("#fee2e2", "#991b1b")}
+                      onClick={() => updateStatus(app._id, "rejected")}
+                    >
+                      Reject
+                    </button>
+                  </div>
+
+                </div>
+              ))
               )}
             </>
           )}

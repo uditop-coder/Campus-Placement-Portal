@@ -46,29 +46,47 @@ export default function StudentDashboard() {
   };
 
   const fetchApplications = async () => {
-    const res = await axios.get("http://localhost:5000/api/application");
-    const myApps = res.data.filter(
-      (a) => a.student?.user === userId || a.student?._id === userId
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(
+      "http://localhost:5000/api/application/student",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
-    setApplications(myApps);
-  };
+
+    setApplications(res.data);
+
+  } catch (err) {
+    console.error("Error fetching applications:", err);
+  }
+};
 
   const applyToDrive = async (driveId) => {
-    try {
-      if (!profile._id) {
-        alert("Profile not loaded yet");
-        return;
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "http://localhost:5000/api/application/apply",
+      { drive: driveId },   
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-      await axios.post("http://localhost:5000/api/application/apply", {
-        student: profile._id,
-        drive: driveId
-      });
-      fetchApplications();
-    } catch (err) {
-      console.log(err);
-      alert(err.response?.data?.message || "Error applying");
-    }
-  };
+    );
+
+    alert("Applied successfully!");
+    fetchApplications();
+
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Error applying");
+  }
+};
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();

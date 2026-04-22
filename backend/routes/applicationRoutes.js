@@ -3,7 +3,7 @@ const router = require("express").Router();
 const Application = require("../models/Application");
 const Drive = require("../models/Drive");
 const Company = require("../models/Company");
-
+const Student = require("../models/Student");
 const auth = require("../middleware/authMiddleware");
 
 // 🔐 ROLE CHECK MIDDLEWARES
@@ -30,9 +30,16 @@ router.post("/apply", auth, isStudent, async (req, res) => {
   try {
     const { drive } = req.body;
 
-    // check duplicate
+    const student = await Student.findOne({ user: req.user.id });
+
+    if (!student) {
+      return res.status(400).json({
+        message: "Student profile not found"
+      });
+    }
+
     const existing = await Application.findOne({
-      student: req.user.id,
+      student: student._id,
       drive
     });
 
@@ -43,22 +50,15 @@ router.post("/apply", auth, isStudent, async (req, res) => {
     }
 
     const application = await Application.create({
-      student: req.user.id,
+      student: student._id,   // ✅ CORRECT
       drive
     });
 
     res.json(application);
 
   } catch (err) {
-    // handle unique index error
-    if (err.code === 11000) {
-      return res.status(400).json({
-        message: "Already applied to this drive"
-      });
-    }
-
     console.error(err);
-    res.status(500).json({ message: "Error applying to drive" });
+    res.status(500).json({ message: "Error applying" });
   }
 });
 
@@ -76,7 +76,7 @@ router.get("/company", auth, isCompany, async (req, res) => {
     const applications = await Application.find({
       drive: { $in: drives.map(d => d._id) }
     })
-      .populate("student", "name rollNo")
+      .populate("student", "name rollNo branch cgpa resume") // ✅ FIXED
       .populate("drive", "jobTitle");
 
     res.json(applications);
