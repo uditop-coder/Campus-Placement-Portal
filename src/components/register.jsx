@@ -36,7 +36,7 @@ export default function Register() {
         rollNo: form.rollNo
       }
     : {
-        companyName: form.companyName, // ✅ FIXED
+        companyName: form.companyName,
         email: form.email,
         password: form.password,
         role: "company",
@@ -66,6 +66,12 @@ export default function Register() {
     <div style={styles.container}>
       <div style={styles.card}>
 
+        <form autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+
+          {/* 🔥 DUMMY FIELDS (IMPORTANT) */}
+          <input type="text" name="fake_email" style={{ display: "none" }} />
+          <input type="password" name="fake_password" style={{ display: "none" }} />
+
         <h2 style={styles.title}>Create Account</h2>
         <p style={styles.subtitle}>Join the placement portal</p>
 
@@ -89,6 +95,7 @@ export default function Register() {
         <input
           name="email"
           placeholder="Email Address"
+          autoComplete="off"
           onChange={handleChange}
           style={styles.input}
         />
@@ -98,6 +105,7 @@ export default function Register() {
           name="password"
           type="password"
           placeholder="Password"
+          autoComplete="off"
           onChange={handleChange}
           style={styles.input}
         />
@@ -130,51 +138,52 @@ export default function Register() {
           Already have an account?{" "}
           <a href="/" style={styles.link}>Login</a>
         </p>
-
+      </form>
       </div>
     </div>
   );
 }
 
-/* 🎨 STYLES */
 const styles = {
- container: {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",   
-  background: "linear-gradient(to right, #f8fafc, #eef2ff)",
-  padding: "20px",      
-  boxSizing: "border-box"
-},
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #eef2ff, #f8fafc)",
+    padding: "20px",
+    boxSizing: "border-box"
+  },
 
   card: {
-  background: "#fff",
-  padding: "30px",
-  width: "100%",
-  maxWidth: "380px",   
-  borderRadius: "12px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  textAlign: "center"
-},
+    background: "#ffffff",
+    padding: "32px 28px",
+    width: "100%",
+    maxWidth: "380px",
+    borderRadius: "16px",
+    boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+    textAlign: "center"
+  },
 
   title: {
-    marginBottom: "5px",
-    fontSize: "24px",
-    fontWeight: "700"
+    marginBottom: "4px",
+    fontSize: "22px",
+    fontWeight: "700",
+    color: "#0f172a"
   },
 
   subtitle: {
-    fontSize: "14px",
+    fontSize: "13px",
     color: "#64748b",
-    marginBottom: "20px"
+    marginBottom: "18px"
   },
 
   toggle: {
     display: "flex",
     background: "#f1f5f9",
-    borderRadius: "8px",
-    marginBottom: "15px"
+    borderRadius: "10px",
+    marginBottom: "18px",
+    padding: "4px"
   },
 
   tab: {
@@ -183,43 +192,53 @@ const styles = {
     border: "none",
     background: "transparent",
     cursor: "pointer",
-    color: "#64748b"
+    color: "#64748b",
+    fontSize: "13px"
   },
 
   activeTab: {
     flex: 1,
     padding: "8px",
     border: "none",
-    background: "#fff",
+    background: "#ffffff",
     borderRadius: "8px",
     fontWeight: "600",
     cursor: "pointer",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    color: "#0f172a"
   },
 
   input: {
     width: "100%",
-    padding: "10px",
+    padding: "11px 12px",
     marginBottom: "12px",
-    borderRadius: "6px",
+    borderRadius: "8px",
     border: "1px solid #e2e8f0",
-    outline: "none"
+    outline: "none",
+    background: "#ffffff",          // ✅ white background
+    color: "#0f172a",               // ✅ black text
+    fontSize: "13px",
+    transition: "all 0.2s ease"
   },
+
+
 
   button: {
     width: "100%",
-    padding: "10px",
-    background: "#2563eb",
+    padding: "11px",
+    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
-    marginTop: "10px"
+    marginTop: "10px",
+    fontSize: "14px",
+    transition: "0.2s"
   },
 
   footer: {
-    marginTop: "15px",
+    marginTop: "16px",
     fontSize: "13px",
     color: "#64748b"
   },

@@ -20,14 +20,17 @@ export default function CompanyDashboard() {
   const [drives, setDrives] = useState([]);
   const [applications, setApplications] = useState([]);
   const [newDrive, setNewDrive] = useState({ jobTitle: "", description: "",  jdLink: ""  });
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (userId) fetchCompany();
   }, [userId]);
 
   useEffect(() => {
-    if (active === "applications") fetchApplications();
-  }, [active]);
+    fetchCompany();
+    fetchDrives();
+    fetchApplications(); // 🔥 ADD THIS HERE
+  }, []);
 
   // ── API ──────────────────────────────────────────────────
   const fetchCompany = async () => {
@@ -157,6 +160,16 @@ export default function CompanyDashboard() {
       background: s.bg, color: s.color, fontWeight: "600", display: "inline-block",
     };
   };
+
+  const filteredApplications = applications.filter((app) => {
+  const name = app.student?.name?.toLowerCase() || "";
+  const roll = app.student?.rollNo?.toLowerCase() || "";
+
+  return (
+    name.includes(searchTerm.toLowerCase()) ||
+    roll.includes(searchTerm.toLowerCase())
+  );
+});
 
   const driveStatusBadge = (isApproved) => {
   if (isApproved === true) {
@@ -714,12 +727,29 @@ export default function CompanyDashboard() {
                 <p style={pageSubtitle}>Review and manage applicants</p>
               </div>
 
-              {applications.length === 0 ? (
+              <div style={{ marginBottom: "16px" }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search by name or roll number..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    borderRadius: "10px",
+                    border: "1px solid #e2e8f0",
+                    fontSize: "13px",
+                    outline: "none"
+                  }}
+                />
+              </div>
+
+              {filteredApplications.length === 0 ? (
                 <div style={{ padding: "48px 0", textAlign: "center", color: "#94a3b8", fontSize: "14px" }}>
                   No applications yet
                 </div>
               ) : (
-                applications.map((app) => (
+                filteredApplications.map((app) => (
                 <div key={app._id} style={listCard}>
 
                   {/* 👤 PROFILE ICON */}

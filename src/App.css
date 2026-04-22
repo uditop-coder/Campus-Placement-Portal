@@ -43,3 +43,8 @@ body {
   margin: 0;           /* removes default spacing */
   padding: 0;
 }
+
+input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
