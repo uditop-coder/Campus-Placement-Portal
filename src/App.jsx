@@ -3,7 +3,7 @@ import "./App.css";
 import LoginPage from "./components/login";
 import Register from "./components/register";
 import StudentDashboard from "./components/student/dashboard";
-import AdminDashboard from "./components/admin/dashboard";
+import AdminDashboard from "./components/admin/Dashboard";
 import CompanyDashboard from "./components/company/dashboard"; // 🔥 ADD
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
