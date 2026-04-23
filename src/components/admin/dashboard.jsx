@@ -229,7 +229,8 @@ const styles = {
   },
 
   card: {
-    background: "white",
+    backgroundColor: "#ffffff",   // ✅ use backgroundColor (more reliable)
+    color: "#000000",             // ✅ force black text
     padding: "16px",
     borderRadius: "12px",
     marginTop: "15px",
