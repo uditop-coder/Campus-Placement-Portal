@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 
-export default function Dashboard() {
+export default function AdminDashboard() {
   const [active, setActive] = useState("companies");
   const [companies, setCompanies] = useState([]);
   const [drives, setDrives] = useState([]);
   const [students, setStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     fetchCompanies();
@@ -21,7 +23,6 @@ export default function Dashboard() {
     setDrives(res.data || []);
   };
 
-  // 🔥 NEW STUDENT API
   const fetchStudents = async () => {
     const res = await axios.get("http://localhost:5000/api/admin/students");
     setStudents(res.data || []);
@@ -37,228 +38,160 @@ export default function Dashboard() {
     fetchDrives();
   };
 
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.clear();
     window.location.href = "/";
   };
 
   return (
-    <div style={styles.dashboard}>
+    <div className="flex h-screen bg-gradient-to-br from-blue-100 to-white">
 
       {/* Sidebar */}
-      <div style={styles.sidebar}>
-        <h2 style={{ marginBottom: "20px" }}>Admin Panel</h2>
+      <div className="w-64 bg-primary text-white flex flex-col p-5 shadow-lg">
+        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
 
-        <SidebarBtn
-          active={active === "companies"}
-          onClick={() => {
-            setActive("companies");
-            fetchCompanies();
-          }}
-          label={`Companies (${companies.length})`}
-        />
+        <SidebarBtn active={active === "companies"} onClick={() => {setActive("companies"); fetchCompanies();}} label={`Companies (${companies.length})`} />
+        <SidebarBtn active={active === "drives"} onClick={() => {setActive("drives"); fetchDrives();}} label={`Drives (${drives.length})`} />
+        <SidebarBtn active={active === "students"} onClick={() => {setActive("students"); fetchStudents();}} label={`Students (${students.length})`} />
 
-        <SidebarBtn
-          active={active === "drives"}
-          onClick={() => {
-            setActive("drives");
-            fetchDrives();
-          }}
-          label={`Drives (${drives.length})`}
-        />
-
-        {/* 🔥 NEW STUDENT BUTTON */}
-        <SidebarBtn
-          active={active === "students"}
-          onClick={() => {
-            setActive("students");
-            fetchStudents();
-          }}
-          label={`Students (${students.length})`}
-        />
-
-        {/* Bottom */}
-        <div style={{ marginTop: "auto" }}>
-          <p style={{ fontSize: "13px", opacity: 0.8 }}>
-            Logged in as <b>admin</b>
-          </p>
-
-          <button style={styles.logoutBtn} onClick={handleLogout}>
+        <div className="mt-auto">
+          <p className="text-sm opacity-70">Logged in as admin</p>
+          <button onClick={logout} className="mt-3 w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg">
             Logout
           </button>
         </div>
       </div>
 
       {/* Main */}
-      <div style={styles.main}>
-        <h1 style={{ color: "#111", marginBottom: "10px" }}>
-          {active === "companies"
-            ? "Pending Companies"
-            : active === "drives"
-            ? "Pending Drives"
-            : "Student Details"}
+      <div className="flex-1 p-6 overflow-y-auto">
+
+        <h1 className="text-3xl font-bold text-primary mb-4">
+          {active === "companies" ? "Pending Companies" :
+           active === "drives" ? "Pending Drives" : "Students"}
         </h1>
 
         {/* Companies */}
-        {active === "companies" &&
-          (companies.length === 0 ? (
-            <Empty text="No companies pending" />
-          ) : (
-            companies.map((c) => (
-              <div key={c._id} style={styles.card}>
-                <div>
-                  <h3>{c.companyName}</h3>
-                  <p style={styles.subText}>{c.user?.email}</p>
-                </div>
-                <button
-                  onClick={() => approveCompany(c._id)}
-                  style={styles.approveBtn}
-                >
-                  Approve
-                </button>
+        {active === "companies" && (
+          companies.length === 0 ? <Empty text="No companies pending" /> :
+          companies.map((c) => (
+            <Card key={c._id}>
+              <div>
+                <h3 className="font-bold text-lg">{c.companyName}</h3>
+                <p className="text-gray-500">{c.user?.email}</p>
               </div>
-            ))
-          ))}
+              <button
+                onClick={() => approveCompany(c._id)}
+                className="bg-primary hover:bg-blue-800 text-white px-4 py-2 rounded-lg"
+              >
+                Approve
+              </button>
+            </Card>
+          ))
+        )}
 
         {/* Drives */}
-        {active === "drives" &&
-          (drives.length === 0 ? (
-            <Empty text="No drives pending" />
-          ) : (
-            drives.map((d) => (
-              <div key={d._id} style={styles.card}>
-                <div>
-                  <h3>{d.company?.companyName}</h3>
-                  <p style={styles.subText}>{d.jobTitle}</p>
-                </div>
-                <button
-                  onClick={() => approveDrive(d._id)}
-                  style={styles.approveBtn}
-                >
-                  Approve
-                </button>
+        {active === "drives" && (
+          drives.length === 0 ? <Empty text="No drives pending" /> :
+          drives.map((d) => (
+            <Card key={d._id}>
+              <div>
+                <h3 className="font-bold text-lg">{d.company?.companyName}</h3>
+                <p className="text-gray-500">{d.jobTitle}</p>
               </div>
-            ))
-          ))}
+              <button
+                onClick={() => approveDrive(d._id)}
+                className="bg-primary hover:bg-blue-800 text-white px-4 py-2 rounded-lg"
+              >
+                Approve
+              </button>
+            </Card>
+          ))
+        )}
 
-        {/* 🔥 STUDENTS */}
-        {active === "students" &&
-          (students.length === 0 ? (
-            <Empty text="No students found" />
-          ) : (
-            students.map((s) => (
-              <div key={s._id} style={styles.card}>
-                <div>
-                  <h3>{s.name}</h3>
-                  <p style={styles.subText}>{s.email}</p>
-                </div>
-                <span style={styles.badge}>Student</span>
+        {/* Students */}
+        {active === "students" && (
+          students.length === 0 ? <Empty text="No students found" /> :
+          students.map((s) => (
+            <Card key={s._id} onClick={() => setSelectedStudent(s)}>
+              <div>
+                <h3 className="font-bold">{s.name}</h3>
+                <p className="text-gray-500">{s.email}</p>
               </div>
-            ))
-          ))}
+              <span className="bg-green-500 text-white px-3 py-1 rounded-lg">
+                View
+              </span>
+            </Card>
+          ))
+        )}
       </div>
+
+      {/* Modal */}
+      {selectedStudent && (
+        <motion.div 
+          className="fixed inset-0 flex items-center justify-center bg-black/50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div 
+            className="bg-white p-6 rounded-xl w-96 text-center shadow-xl"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+          >
+            <h2 className="text-xl font-bold mb-2">{selectedStudent.name}</h2>
+            <p>{selectedStudent.email}</p>
+
+            {selectedStudent.resume ? (
+              <a
+                href={`http://localhost:5000/${selectedStudent.resume}`}
+                target="_blank"
+                className="block mt-3 bg-primary text-white py-2 rounded"
+              >
+                View Resume
+              </a>
+            ) : (
+              <p className="text-gray-400 mt-2">No Resume</p>
+            )}
+
+            <button
+              onClick={() => setSelectedStudent(null)}
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
 
-/* 🔥 Sidebar Button Component */
+/* Components */
+
 function SidebarBtn({ active, onClick, label }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: "12px",
-        marginBottom: "10px",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer",
-        textAlign: "left",
-        fontWeight: "600",
-        background: active ? "#4f46e5" : "transparent",
-        color: active ? "white" : "#cbd5e1",
-      }}
+      className={`text-left px-3 py-2 rounded-lg mb-2 transition ${
+        active ? "bg-white text-primary font-semibold" : "hover:bg-blue-700"
+      }`}
     >
       {label}
     </button>
   );
 }
 
-/* Empty State */
-function Empty({ text }) {
+function Card({ children, onClick }) {
   return (
-    <p style={{ color: "#64748b", marginTop: "20px" }}>
-      {text}
-    </p>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className="bg-white p-4 rounded-xl shadow-md flex justify-between items-center mb-4 cursor-pointer"
+      onClick={onClick}
+    >
+      {children}
+    </motion.div>
   );
 }
 
-/* 🔥 STYLES */
-const styles = {
-  dashboard: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "Segoe UI, sans-serif",
-  },
-
-  sidebar: {
-    width: "240px",
-    background: "#0f172a",
-    color: "white",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-  },
-
-  logoutBtn: {
-    width: "100%",
-    padding: "12px",
-    marginTop: "10px",
-    background: "#ef4444",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-
-  main: {
-    flex: 1,
-    padding: "25px",
-    background: "#f1f5f9",
-    overflowY: "auto",
-  },
-
-  card: {
-    backgroundColor: "#ffffff",   // ✅ use backgroundColor (more reliable)
-    color: "#000000",             // ✅ force black text
-    padding: "16px",
-    borderRadius: "12px",
-    marginTop: "15px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-  },
-
-  approveBtn: {
-    background: "#4f46e5",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
-
-  subText: {
-    color: "#64748b",
-    fontSize: "13px",
-  },
-
-  badge: {
-    background: "#22c55e",
-    color: "white",
-    padding: "5px 10px",
-    borderRadius: "6px",
-    fontSize: "12px",
-  },
-};
+function Empty({ text }) {
+  return <p className="text-gray-500">{text}</p>;
+}
